@@ -12,8 +12,9 @@ import sqlite3
 import os
 import math
 import csv
-from  xls2csv import readExcel
+from  xls2csv import readExcelByRow
 from getFileList import createGraphicExcel
+from getFileList import createEquipmentExcel
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -21,19 +22,19 @@ class Usage(Exception):
 
 
 def getDepot(depotFile):
-    depotList = readExcel(depotFile)
+    depotList = readExcelByRow(depotFile)
     #depot = [item[0], item[1], item[2] for item in depotList]
     return depotList
 
 
 def getGraphic(graphicFile):
-    depotList = readExcel(graphicFile)
+    depotList = readExcelByRow(graphicFile)
     return depotList
     # return {0: ["山丹_平面布置图.dwg", "0", "PMT"]}
 
 
 def getEquipment(equipmentFile):
-    depotList = readExcel(equipmentFile)
+    depotList = readExcelByRow(equipmentFile)
     return depotList
     # return {0: ["DC", "DC"]}
 
@@ -118,7 +119,9 @@ def createDB(db):
     graphicFile = "graphicFile.xlsx"
     equipmentFile = "equipmentFile.xlsx"
     depot = u"山丹"
+    createEquipmentExcel(equipmentFile,depot)
     createGraphicExcel(graphicFile, depot)
+
     dbFile = os.getcwd() + "\\" + db
     if os.path.exists(dbFile):
         print("%s is existed, delete then rebuild" % db)
@@ -139,8 +142,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    #        sys.exit(main())
-    # reload(sys)
-    # sys.setdefaultencoding('utf8')
-
     main()
