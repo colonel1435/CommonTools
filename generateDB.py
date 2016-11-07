@@ -1,5 +1,4 @@
 #!usr/bin/env python3.4
-# coding=utf8
 # -*- coding: utf-8 -*-
 # #  FileName    : generateDB
 # #  Author      : Zero
@@ -14,6 +13,7 @@ import os
 import math
 import csv
 from  xls2csv import readExcel
+from getFileList import createGraphicExcel
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -47,7 +47,6 @@ def createDepotTable(conn, depotInfo):
     print(sqlCmd)
     conn.execute(sqlCmd)
     sizeDepot = len(depotInfo)
-    print(depotInfo)
     for i in range(sizeDepot):
         insertCmd = '''INSERT INTO Depot (id, name, flatName)
                                VALUES (%d, "%s", "%s")
@@ -118,6 +117,8 @@ def createDB(db):
     depotFile = "depotFile.xlsx"
     graphicFile = "graphicFile.xlsx"
     equipmentFile = "equipmentFile.xlsx"
+    depot = u"山丹"
+    createGraphicExcel(graphicFile, depot)
     dbFile = os.getcwd() + "\\" + db
     if os.path.exists(dbFile):
         print("%s is existed, delete then rebuild" % db)
@@ -132,10 +133,6 @@ def createDB(db):
 
 
 def main(argv=None):
-
-# depotList = readExcel("depotFile.xlsx")
-# for item in depotList:
-#     print(item)
     dbFile = "sunland.db"
     print(">>> Start to create database %s <<<" % dbFile)
     createDB(dbFile)
