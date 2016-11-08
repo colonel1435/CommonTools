@@ -43,13 +43,13 @@ def createDepotTable(conn, depotInfo):
     sqlCmd = '''CREATE TABLE Depot
 			(id INT PRIMARY KEY NOT NULL,
 			 name CHAR(30) NOT NULL,
-			 flatName CHAR(50) NOT NULL);
+			 flatFile CHAR(50) NOT NULL);
 			 '''
     print(sqlCmd)
     conn.execute(sqlCmd)
     sizeDepot = len(depotInfo)
     for i in range(sizeDepot):
-        insertCmd = '''INSERT INTO Depot (id, name, flatName)
+        insertCmd = '''INSERT INTO Depot (id, name, flatFile)
                                VALUES (%d, "%s", "%s")
 			    ''' % (i, depotInfo[i][1], depotInfo[i][2])
         print(insertCmd)
