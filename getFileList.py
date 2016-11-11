@@ -29,14 +29,18 @@ TYPE_DEVICE_XHJ = "XHJ"
 TYPE_DEVICE_QJXHJ = "QJXHJ"
 TYPE_DEVICE_BOX = "BOX"
 TYPE_DEVICE_QBOX = "QBOX"
+TYPE_DEVICE_LK = "LK"
 
 TYPE_DEVICE_DC_F = "道岔"
 TYPE_DEVICE_GDDL_F = "轨道区段"
 TYPE_DEVICE_QJGDDL_F = "区间轨道区段"
 TYPE_DEVICE_XHJ_F = "信号机"
 TYPE_DEVICE_QJXHJ_F = "区间信号机"
+TYPE_DEVICE_DCARXHJ_F = "调车信号机"
+TYPE_DEVICE_LCARXHJ_F = "列车信号机"
 TYPE_DEVICE_BOX_F = "BOX"
 TYPE_DEVICE_QBOX_F = "QBOX"
+TYPE_DEVICE_LK_F  = "列控"
 
 def getFileType(file):
     if file.find(TYPE_DLYC) != -1:
@@ -55,14 +59,24 @@ def getFileType(file):
 def getEquipmentType(device):
     if device == TYPE_DEVICE_DC_F:
         return TYPE_DEVICE_DC
-    if device == TYPE_DEVICE_GDDL_F:
-        return  TYPE_DEVICE_GDDL
     if device == TYPE_DEVICE_QJGDDL_F:
         return TYPE_DEVICE_QJGDDL
-    if device == TYPE_DEVICE_XHJ_F:
-        return TYPE_DEVICE_XHJ
+    if device == TYPE_DEVICE_GDDL_F:
+        return  TYPE_DEVICE_GDDL
     if device == TYPE_DEVICE_QJXHJ_F:
         return TYPE_DEVICE_QJXHJ
+    if device == TYPE_DEVICE_XHJ_F:
+        return TYPE_DEVICE_XHJ
+    if device == TYPE_DEVICE_DCARXHJ_F:
+        return TYPE_DEVICE_XHJ
+    if device == TYPE_DEVICE_LCARXHJ_F:
+        return TYPE_DEVICE_XHJ
+    if device == TYPE_DEVICE_QBOX_F:
+        return TYPE_DEVICE_QBOX
+    if device == TYPE_DEVICE_BOX_F:
+        return TYPE_DEVICE_BOX
+    if device == TYPE_DEVICE_LK_F:
+        return TYPE_DEVICE_LK
     return TYPE_DEVICE_BOX
 def getDepotList(depot=None):
     fileList = []
@@ -90,13 +104,21 @@ def getEquipmentList(depot=None):
     eItemDict = {}
     outputList = []
     out = {}
+
     eFile = depot + EQUIPMENT_POSTFFIX
     eInnerFile = depot +"区间" + EQUIPMENT_POSTFFIX
-    eFileDir = os.path.join(os.getcwd(), depot, "站内", eFile)
-    eInnerFileDir = os.path.join(os.getcwd(), depot,  "区间" , eInnerFile)
+    e2216File = "2216区间" + EQUIPMENT_POSTFFIX
+    e2236File = "2236区间" + EQUIPMENT_POSTFFIX
+
+
+    eFileDir = os.path.join(os.getcwd(), depot, depot, eFile)
+    eInnerFileDir = os.path.join(os.getcwd(), depot,  depot+"区间" , eInnerFile)
+    e2216Dir = os.path.join(os.getcwd(), depot, "中继站2216", e2216File)
+    e2236Dir = os.path.join(os.getcwd(), depot, "中继站2236", e2236File)
     eList = readExcelByCol(eFileDir.decode("utf-8"))
-    eInnerList = readExcelByCol(eInnerFileDir.decode("utf-8"))
-    eList.extend(eInnerList)
+    eList.extend(readExcelByCol(eInnerFileDir.decode("utf-8")))
+    eList.extend(readExcelByCol(e2216Dir.decode("utf-8")))
+    eList.extend(readExcelByCol(e2236Dir.decode("utf-8")))
     # print eList
     for item in eList:
         for i in range(1, len(item)) :
@@ -156,9 +178,9 @@ def createDepotExcel(depotFile, depot=None):
     # if sizeList <= 0:
     #     print ">>> No depot file"
     #     return None
-    wSheet.write(1, 0, 0)
-    wSheet.write(1, 1, depot)
-    wSheet.write(1, 2, "_".join([depot,FLAT_POSTFFIX]))
+    # wSheet.write(1, 0, 0)
+    # wSheet.write(1, 1, depot)
+    # wSheet.write(1, 2, ("_".join([depot,FLAT_POSTFFIX])).decode('utf-8'))
 
     wBook.save(depotFile)
 def createGraphicExcel(file, depot):
@@ -225,13 +247,13 @@ def createEquipmentExcel(file, depot):
 
 def main(argv = None):
 
-    depot = u"山丹"
-    depotFile = "depot.xlsx"
+    depot = u"高台南"
+    depotFile = "depotFile.xlsx"
     graphicFile = "graphic.xlsx"
     equipmentFile = "equipment.xlsx"
-    # createDepotExcel(depotFile, depot)
+    createDepotExcel(depotFile, depot)
     # createGraphicExcel(graphicFile, depot)
-    createEquipmentExcel(equipmentFile, depot)
+    # createEquipmentExcel(equipmentFile, depot)
 
 if __name__ == "__main__":
     main()

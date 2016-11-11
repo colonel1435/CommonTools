@@ -99,7 +99,7 @@ def main(argv):
     #     pass
     # elif OPTIONS.depot_name != None:
     #     print (OPTIONS.depot_name)
-    #     OPTIONS.output_dir = os.path.join(OPTIONS.output_dir, OPTIONS.depot_name.decode("utf-8"))
+    #     OPTIONS.output_dir = os.path.join(OPTIONS.output_dir, OPTIONS.depot_name)
     #     print (OPTIONS.output_dir)
     #     createJson()
     # else:
@@ -110,6 +110,5 @@ def main(argv):
     OPTIONS.output_dir = os.path.join(OPTIONS.output_dir, OPTIONS.depot_name)
     print (OPTIONS.output_dir)
     createJson()
-    # store(measurements)
 if __name__ == "__main__":
     main(sys.argv[1:])

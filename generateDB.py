@@ -15,6 +15,7 @@ import csv
 from  xls2csv import readExcelByRow
 from getFileList import createGraphicExcel
 from getFileList import createEquipmentExcel
+from getFileList import createDepotExcel
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -40,22 +41,35 @@ def getEquipment(equipmentFile):
 
 
 def createDepotTable(conn, depotInfo):
+    conn.text_factory = str
     sqlCmd = '''CREATE TABLE Depot
 			(id INT PRIMARY KEY NOT NULL,
 			 name CHAR(30) NOT NULL,
+			 depotDC BLOB NOT NULL,
 			 flatFile CHAR(50) NOT NULL);
 			 '''
     print(sqlCmd)
     conn.execute(sqlCmd)
     sizeDepot = len(depotInfo)
     for i in range(sizeDepot):
-        insertCmd = '''INSERT INTO Depot (id, name, flatFile)
-                               VALUES (%d, "%s", "%s")
-			    ''' % (i, depotInfo[i][1], depotInfo[i][2])
-        print(insertCmd)
-        conn.execute(insertCmd)
+        file = unicode(os.path.join(os.getcwd(), depotInfo[i][2]), "utf-8")
+        print (file)
+        with open(file, 'rb') as f:
+            data = f.read()
+            insertCmd = '''INSERT INTO Depot (id, name, depotDC, flatFile)
+                           VALUES (?, ?, ?, ?)
+                        '''
+            print(insertCmd)
+            conn.execute(insertCmd, (i, depotInfo[i][1], sqlite3.Binary(data), depotInfo[i][3]))
     conn.commit()
-
+'''
+    cursor = conn.cursor()
+    with open('test.json', 'wb') as out:
+        cursor.execute("SELECT depotDC FROM Depot WHERE id = 0")
+        ablob = cursor.fetchone()
+        out.write(ablob[0])
+    cursor.close()
+'''
 
 def createGraphicTable(conn, graphicInfo):
     conn.text_factory = str
@@ -72,19 +86,12 @@ def createGraphicTable(conn, graphicInfo):
         print (file)
         with open(file, 'rb') as f:
             data = f.read()
-            # insertCmd = '''INSERT INTO Graphic (gid, fileName, fileData, type)
-            #         VALUES ({gid},"{fileName}",{fileData},"{fileType}")
-            #         '''.format(gid=i, fileName=graphicInfo[i][1],
-            #                    fileData=sqlite3.Binary(data),
-            #                    fileType=graphicInfo[i][3])
             insertCmd = '''
                         INSERT INTO Graphic (gid, fileName, fileData, type)
                         VALUES (?, ?, ? ,?)
                         '''
             print(insertCmd)
-            # conn.execute(insertCmd)
             conn.execute(insertCmd, (i, graphicInfo[i][1], sqlite3.Binary(data), graphicInfo[i][3]))
-
     conn.commit()
 '''
     # TODO check output file
@@ -118,7 +125,8 @@ def createDB(db):
     depotFile = "depotFile.xlsx"
     graphicFile = "graphicFile.xlsx"
     equipmentFile = "equipmentFile.xlsx"
-    depot = u"山丹"
+    depot = u"高台南"
+    # createDepotExcel(depotFile, depot)
     createEquipmentExcel(equipmentFile,depot)
     createGraphicExcel(graphicFile, depot)
 
