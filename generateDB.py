@@ -130,12 +130,12 @@ def createEquipmentTable(conn, equipmentInfo):
     conn.commit()
 
 
-def createDB(db):
+def createDB(db, depot, graphic, equipment):
     conn = sqlite3.connect(db)
     print("Open db successfully")
-    createDepotTable(conn, getDepot(depotFile))
-    createGraphicTable(conn, getGraphic(graphicFile))
-    createEquipmentTable(conn, getEquipment(equipmentFile))
+    createDepotTable(conn, getDepot(depot))
+    createGraphicTable(conn, getGraphic(graphic))
+    createEquipmentTable(conn, getEquipment(equipment))
     conn.close()
     print(">>> Create database -> %s successful! <<<" % db)
 
@@ -186,7 +186,10 @@ def main(argv=None):
         createGraphicExcel(graphicFile, productDir, depot)
 
         print(">>> Start to create database %s <<<" % dbFile)
-     # createDB(dbFile)
+        createDB(dbFile,
+                 os.path.join(productDir,depotFile),
+                 os.path.join(productDir,graphicFile),
+                 os.path.join(productDir,equipmentFile))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

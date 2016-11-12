@@ -97,7 +97,7 @@ def getAllETable(root):
     for rootDir, dirNames, fileNames in os.walk(root, topdown=True):
         for fileName in fileNames:
             if fileName.endswith(EQUIPMENT_POSTFFIX.decode("utf-8")):
-                eFile = os.path.join(os.getcwd(), fileName)
+                eFile = os.path.join(rootDir, fileName)
                 eList.append(eFile)
     return eList
 def getDepotDC(depot, outputDir):
