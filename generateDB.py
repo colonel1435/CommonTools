@@ -16,11 +16,20 @@ from  xls2csv import readExcelByRow
 from getFileList import createGraphicExcel
 from getFileList import createEquipmentExcel
 from getFileList import createDepotExcel
+from getFileList import getAllDepot
 
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
+import codecs
+import common
+from common import Usage
+from xls2csv import readExcelByRow
 
+OPTIONS = common.OPTIONS
+OPTIONS.json_name = "dumn.json"
+OPTIONS.output_dir = os.getcwd()
+OPTIONS.turnout_name = u"道岔列表.xlsx"
+OPTIONS.append_depot = False
+OPTIONS.depot_name = None
+OPTIONS.database_postfix = ".db"
 
 def getDepot(depotFile):
     depotList = readExcelByRow(depotFile)
@@ -122,18 +131,6 @@ def createEquipmentTable(conn, equipmentInfo):
 
 
 def createDB(db):
-    depotFile = "depotFile.xlsx"
-    graphicFile = "graphicFile.xlsx"
-    equipmentFile = "equipmentFile.xlsx"
-    depot = u"高台南"
-    # createDepotExcel(depotFile, depot)
-    createEquipmentExcel(equipmentFile,depot)
-    createGraphicExcel(graphicFile, depot)
-
-    dbFile = os.getcwd() + "\\" + db
-    if os.path.exists(dbFile):
-        print("%s is existed, delete then rebuild" % db)
-        os.remove(dbFile)
     conn = sqlite3.connect(db)
     print("Open db successfully")
     createDepotTable(conn, getDepot(depotFile))
@@ -144,10 +141,52 @@ def createDB(db):
 
 
 def main(argv=None):
-    dbFile = "sunland.db"
-    print(">>> Start to create database %s <<<" % dbFile)
-    createDB(dbFile)
+    # depotFile = "depotFile.xlsx"
+    # graphicFile = "graphicFile.xlsx"
+    # equipmentFile = "equipmentFile.xlsx"
+    # depot = u"高台南".decode("utf-8")
+    # createDepotExcel(depotFile, depot)
+    # createEquipmentExcel(equipmentFile,depot)
+    # createGraphicExcel(graphicFile, depot)
+    # depot = None
+    # depot = "高台南"
+    # if depot != None:
+    #     productDir = os.path.join(os.getcwd(), "product", depot)
+    #     dbFile = depot + OPTIONS.database_postfix
+    # else:
+    #     productDir = os.path.join(os.getcwd(), "product")
+    # print (">>> PRODUCT DIR -> " + productDir)
+    # # print (">>> DEPOT -> " + depot)
+    # print (">>> DATABASE -> " + dbFile)
+    # if not os.path.exists(productDir.decode("utf-8")):
+    #     os.makedirs(productDir.decode("utf-8"))
 
+    depotFile = "depotFile.xlsx"
+    graphicFile = "graphicFile.xlsx"
+    equipmentFile = "equipmentFile.xlsx"
+
+    allDepot = getAllDepot(os.getcwd())
+    print ("There are " + str(len(allDepot)) + " depots")
+    for depot in allDepot:
+        productDir = os.path.join(os.getcwd(), "product", depot)
+        dbFile = depot + OPTIONS.database_postfix
+
+        print (">>> PRODUCT DIR -> " + productDir)
+        print (">>> DEPOT -> " + depot)
+        print (">>> DATABASE -> " + dbFile)
+        if not os.path.exists(productDir):
+            os.makedirs(productDir)
+
+        if os.path.exists(dbFile):
+            print("%s is existed, delete then rebuild" % dbFile)
+            os.remove(dbFile)
+
+        createDepotExcel(depotFile, productDir, depot)
+        createEquipmentExcel(equipmentFile, productDir, depot)
+        createGraphicExcel(graphicFile, productDir, depot)
+
+        print(">>> Start to create database %s <<<" % dbFile)
+     # createDB(dbFile)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

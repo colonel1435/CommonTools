@@ -28,7 +28,7 @@ def getTurnoutFile(depot = None):
         rootDir = os.getcwd();
     else:
         rootDir = os.path.join(os.getcwd(), OPTIONS.depot_name)
-    for root, dirNames, fileNames in os.walk(rootDir.decode("utf-8"), topdown=True):
+    for root, dirNames, fileNames in os.walk(rootDir, topdown=True):
         print (">>> Enter %s" % root)
         for fileName in fileNames:
             if fileName == OPTIONS.turnout_name:
@@ -50,14 +50,17 @@ def getJsonItems(jsonDir):
         jsonList[i].insert(0, str(itemList[i][0]))
     return jsonList
 
-def createJson():
+def createJson(depot=None, outputDir=None):
+    if depot != None and outputDir != None:
+        OPTIONS.depot_name = depot
+        OPTIONS.output_dir = outputDir
     jsonList = []
     jsonDict = {}
     output_dict = {}
     if (not str(os.path.exists(OPTIONS.output_dir)).decode("utf-8")):
         print (">>> No depot data")
         return;
-    jsonDir = os.path.join(OPTIONS.output_dir, OPTIONS.json_name).decode("utf-8")
+    jsonDir = os.path.join(OPTIONS.output_dir, OPTIONS.json_name)
     if os.path.exists(jsonDir):
         print (">>> Del old json file then recreate it ...")
         os.remove(jsonDir)
@@ -65,16 +68,15 @@ def createJson():
     lenItems = len(jsonItems)
     if lenItems == 0:
         return;
-    for item in jsonItems:
-        print item
     jsonDict = {item[0]:item[1:] for item in jsonItems}
     jsonList.append(jsonDict)
-    output_dict[OPTIONS.depot_name.decode("utf-8")] = jsonDict
+    output_dict[OPTIONS.depot_name] = jsonDict
     print (output_dict)
     with codecs.open(jsonDir, 'w', "utf-8") as f:
         f.write(json.dumps(output_dict, ensure_ascii=False))
+    return jsonDir
 
-def main(argv):
+def main(argv=None):
     def option_handler(p, v):
         if p in ("-d", "--depot"):
             OPTIONS.depot_name = v.decode("gbk")

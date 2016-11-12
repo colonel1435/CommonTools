@@ -31,12 +31,15 @@ def readExcelByRow(excel, row=1):
     return sheetInfo
 
 def readExcelByCol(excel, col=1):
+    print ("##########" + excel)
     if os.path.exists(excel):
         print ">>> %s is existed" % excel
     else:
         print ">>> %s is nothing" % excel
     xlrd.Book.encoding = "utf-8"
     sheetInfo = []
+    if isinstance(excel, unicode):
+        print("########## Excel UNICODE #############")
     workBook = xlrd.open_workbook(excel)
     sheet1 = workBook.sheet_by_index(0)
     for col in range(col, sheet1.ncols):
