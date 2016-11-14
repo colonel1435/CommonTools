@@ -25,11 +25,15 @@ from xls2csv import readExcelByRow
 
 OPTIONS = common.OPTIONS
 OPTIONS.json_name = "dumn.json"
-OPTIONS.output_dir = os.getcwd()
+OPTIONS.output_dir = None
 OPTIONS.turnout_name = u"道岔列表.xlsx"
-OPTIONS.append_depot = False
+OPTIONS.all_depot = False
 OPTIONS.depot_name = None
 OPTIONS.database_postfix = ".db"
+OPTIONS.default_dir = "product"
+OPTIONS.depotFile = "depotFile.xlsx"
+OPTIONS.graphicFile = "graphicFile.xlsx"
+OPTIONS.equipmentFile = "equipmentFile.xlsx"
 
 def getDepot(depotFile):
     depotList = readExcelByRow(depotFile)
@@ -143,34 +147,45 @@ def createDB(db, depot, graphic, equipment):
 
 
 def main(argv=None):
-    # depotFile = "depotFile.xlsx"
-    # graphicFile = "graphicFile.xlsx"
-    # equipmentFile = "equipmentFile.xlsx"
-    # depot = u"高台南".decode("utf-8")
-    # createDepotExcel(depotFile, depot)
-    # createEquipmentExcel(equipmentFile,depot)
-    # createGraphicExcel(graphicFile, depot)
-    # depot = None
-    # depot = "高台南"
-    # if depot != None:
-    #     productDir = os.path.join(os.getcwd(), "product", depot)
-    #     dbFile = depot + OPTIONS.database_postfix
-    # else:
-    #     productDir = os.path.join(os.getcwd(), "product")
-    # print (">>> PRODUCT DIR -> " + productDir)
-    # # print (">>> DEPOT -> " + depot)
-    # print (">>> DATABASE -> " + dbFile)
-    # if not os.path.exists(productDir.decode("utf-8")):
-    #     os.makedirs(productDir.decode("utf-8"))
 
-    depotFile = "depotFile.xlsx"
-    graphicFile = "graphicFile.xlsx"
-    equipmentFile = "equipmentFile.xlsx"
+    def option_handler(p, v):
+        if p in ("-d", "--depot"):
+            OPTIONS.depot_name = v.decode("gbk")
+        elif p == "--all":
+            OPTIONS.all_depot = True
+        elif p in ("-o", "--output"):
+            OPTIONS.output_dir = os.path.join(os.getcwd(), v.decode("gbk"))
+        else:
+            return False
+        return True
 
-    allDepot = getAllDepot(os.getcwd())
+    args = common.ParseOptions(argv, __doc__,
+                               extra_opts="d:ao:",
+                               extra_long_opts=[
+                                   "depot=",
+                                   "all",
+                                   "output="
+                               ], extra_opts_handler=option_handler)
+
+    if len(argv) < 1:
+        Usage("Please reference help description")
+        sys.exit(1)
+
+    if (OPTIONS.depot_name == None) and (OPTIONS.all_depot == False):
+        Usage("Please used -d(--depot) or --all")
+        sys.exit(1)
+    allDepot = None
+    if OPTIONS.depot_name:
+        allDepot  = [OPTIONS.depot_name]
+    else:
+        allDepot = getAllDepot(os.getcwd())
     print ("There are " + str(len(allDepot)) + " depots")
     for depot in allDepot:
-        productDir = os.path.join(os.getcwd(), "product", depot)
+        productDir = ""
+        if OPTIONS.output_dir:
+            productDir = os.path.join(OPTIONS.output_dir, depot)
+        else:
+            productDir = os.path.join(os.getcwd(), OPTIONS.default_dir, depot)
         dbFile = os.path.join(productDir, depot + OPTIONS.database_postfix)
 
         print (">>> PRODUCT DIR -> " + productDir)
@@ -183,15 +198,15 @@ def main(argv=None):
             print("%s is existed, delete then rebuild" % dbFile)
             os.remove(dbFile)
 
-        createDepotExcel(depotFile, productDir, depot)
-        createEquipmentExcel(equipmentFile, productDir, depot)
-        createGraphicExcel(graphicFile, productDir, depot)
+        createDepotExcel(OPTIONS.depotFile, productDir, depot)
+        createEquipmentExcel(OPTIONS.equipmentFile, productDir, depot)
+        createGraphicExcel(OPTIONS.graphicFile, productDir, depot)
 
         print(">>> Start to create database %s <<<" % dbFile)
         createDB(dbFile,
-                 os.path.join(productDir,depotFile),
-                 os.path.join(productDir,graphicFile),
-                 os.path.join(productDir,equipmentFile))
+                 os.path.join(productDir,OPTIONS.depotFile),
+                 os.path.join(productDir,OPTIONS.graphicFile),
+                 os.path.join(productDir,OPTIONS.equipmentFile))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

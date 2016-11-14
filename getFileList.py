@@ -102,11 +102,11 @@ def getAllETable(root):
     return eList
 def getDepotDC(depot, outputDir):
     if depot == None:
-        return None;
+        return "";
     dcDir = createJson(depot, outputDir)
     return dcDir
 
-def getDepotList(depot=None, outputDir=None):
+def getDepotList(depot, outputDir):
     fileList = []
     root = None
     depotList = []
@@ -120,7 +120,6 @@ def getDepotList(depot=None, outputDir=None):
         for fileName in fileNames:
             flat = (depot + FLAT_POSTFFIX.decode("utf-8"))
             if fileName == flat:
-            # if fileName.endswith(FLAT_POSTFFIX):
                 dcDir = getDepotDC(depot, outputDir)
                 item = [depot, dcDir[lenCurDir+1:], fileName]
                 fileList.append(item)
@@ -195,7 +194,7 @@ def getFileList(depot=None, outputDir=None):
 
     return fileList
 
-def createDepotExcel(depotFile, outputDir=None, depot=None):
+def createDepotExcel(depotFile, outputDir, depot):
     print(">>> Start to create depot excel")
     fileDir = os.path.join(outputDir, depotFile)
     if os.path.exists(fileDir):
@@ -216,8 +215,6 @@ def createDepotExcel(depotFile, outputDir=None, depot=None):
         wSheet.col(i).width = 0x0a00 + i * 0x1000
 
     depotList = getDepotList(depot, outputDir)
-    print ("####")
-    print (depotList)
     sizeList = 0
     if depotList == None:
         print ">>> No depot file"
@@ -227,7 +224,6 @@ def createDepotExcel(depotFile, outputDir=None, depot=None):
         print (">>> This is " + depot + " depot")
 
     for i in range(sizeList):
-        print ("### start ###")
         wSheet.write(i+1, 0, 0)
         wSheet.write(i+1, 1, depot)
         wSheet.write(i+1, 2, depotList[i][1])

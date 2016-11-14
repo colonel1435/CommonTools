@@ -8,11 +8,24 @@
 import getopt
 import sys
 
-USAGE_STRING = '''
+USAGE_STRING = u'''
+Example:
+
+python generateDB.py [-d jiayuguan | --all]
+
+python generateDB.py [-h | -d | --all ] [value]
+
 -h (--help):
             Dispaly usage info
+
 -d (--depot):
-            Set dopot name
+            Add a single depot dwg to database
+
+--all:
+            Add all depot dwgs to database
+
+-o(--output):
+            Set product dir
 '''
 class Options(object):
     def __int__(self):
