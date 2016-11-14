@@ -122,7 +122,7 @@ def getDepotList(depot=None, outputDir=None):
             if fileName == flat:
             # if fileName.endswith(FLAT_POSTFFIX):
                 dcDir = getDepotDC(depot, outputDir)
-                item = [depot, dcDir[lenCurDir:], fileName]
+                item = [depot, dcDir[lenCurDir+1:], fileName]
                 fileList.append(item)
                 return fileList
     # print fileList
@@ -216,6 +216,8 @@ def createDepotExcel(depotFile, outputDir=None, depot=None):
         wSheet.col(i).width = 0x0a00 + i * 0x1000
 
     depotList = getDepotList(depot, outputDir)
+    print ("####")
+    print (depotList)
     sizeList = 0
     if depotList == None:
         print ">>> No depot file"
@@ -225,10 +227,12 @@ def createDepotExcel(depotFile, outputDir=None, depot=None):
         print (">>> This is " + depot + " depot")
 
     for i in range(sizeList):
-        wSheet.write(i, 0, 0)
-        wSheet.write(i, 1, depotList[i][0])
-        wSheet.write(i, 2, depotList[i][1])
-        wSheet.write(i, 3, depotList[i][2])
+        print ("### start ###")
+        wSheet.write(i+1, 0, 0)
+        wSheet.write(i+1, 1, depot)
+        wSheet.write(i+1, 2, depotList[i][1])
+        wSheet.write(i+1, 3, depotList[i][2])
+
     wBook.save(fileDir)
 def createGraphicExcel(file, outputDir = None, depot=None):
     print(">>> Start to create graphic excel")
@@ -291,13 +295,13 @@ def createEquipmentExcel(file, outputDir = None, depot = None):
         sizeList = len(fileList)
         print ">>> There are " + str(sizeList) + " equipments"
 
-    i = 0
+    row = 1
     for k, v in fileList.iteritems():
-        wSheet.write(i, 0, i)
+        wSheet.write(row, 0, row-1)
         eType = getEquipmentType(v)
-        wSheet.write(i, 1, k.decode('utf-8'))
-        wSheet.write(i, 2, eType.decode('utf-8'))
-        i += 1
+        wSheet.write(row, 1, k.decode('utf-8'))
+        wSheet.write(row, 2, eType.decode('utf-8'))
+        row += 1
     wBook.save(fileDir)
 
 def main(argv = None):

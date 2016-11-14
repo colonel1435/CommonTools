@@ -33,6 +33,7 @@ OPTIONS.database_postfix = ".db"
 
 def getDepot(depotFile):
     depotList = readExcelByRow(depotFile)
+    print (depotList)
     #depot = [item[0], item[1], item[2] for item in depotList]
     return depotList
 
@@ -62,6 +63,7 @@ def createDepotTable(conn, depotInfo):
     sizeDepot = len(depotInfo)
     for i in range(sizeDepot):
         file = unicode(os.path.join(os.getcwd(), depotInfo[i][2]), "utf-8")
+        # file = unicode(os.getcwd() + "\\" + depotInfo[i][2], "utf-8")
         print (file)
         with open(file, 'rb') as f:
             data = f.read()
@@ -169,7 +171,7 @@ def main(argv=None):
     print ("There are " + str(len(allDepot)) + " depots")
     for depot in allDepot:
         productDir = os.path.join(os.getcwd(), "product", depot)
-        dbFile = depot + OPTIONS.database_postfix
+        dbFile = os.path.join(productDir, depot + OPTIONS.database_postfix)
 
         print (">>> PRODUCT DIR -> " + productDir)
         print (">>> DEPOT -> " + depot)
