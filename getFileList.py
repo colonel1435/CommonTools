@@ -136,24 +136,10 @@ def getEquipmentList(depot=None, outputDir=None):
     out = {}
 
     eTableList = getAllETable(depot)
-    # eFile = depot + EQUIPMENT_POSTFFIX.decode("utf-8")
-    # eInnerFile = depot +u"区间" + EQUIPMENT_POSTFFIX.decode("utf-8")
-    # e2216File = u"2216区间" + EQUIPMENT_POSTFFIX.decode("utf-8")
-    # e2236File = u"2236区间" + EQUIPMENT_POSTFFIX.decode("utf-8")
-    #
-    #
-    # eFileDir = os.path.join(os.getcwd(), depot, depot, eFile)
-    # eInnerFileDir = os.path.join(os.getcwd(), depot,  depot+u"区间" , eInnerFile)
-    # e2216Dir = os.path.join(os.getcwd(), depot, u"中继站2216", e2216File)
-    # e2236Dir = os.path.join(os.getcwd(), depot, u"中继站2236", e2236File)
     for e in eTableList:
         if isinstance(e, unicode):
             print ("#### UNICODE #####")
         eList.extend(readExcelByCol(e))
-    # eList = readExcelByCol(eFileDir)
-    # eList.extend(readExcelByCol(eInnerFileDir))
-    # eList.extend(readExcelByCol(e2216Dir))
-    # eList.extend(readExcelByCol(e2236Dir))
     print eList
     for item in eList:
         for i in range(1, len(item)) :
