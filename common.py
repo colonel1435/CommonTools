@@ -11,7 +11,7 @@ import sys
 USAGE_STRING = u'''
 Example:
 
-python generateDB.py [-d jiayuguan | --all]
+python generateDB.py [-d lanzhou/beijing/shanghai | --all]
 
 python generateDB.py [-h | -d | --all ] [value]
 

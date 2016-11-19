@@ -174,9 +174,10 @@ def main(argv=None):
     if (OPTIONS.depot_name == None) and (OPTIONS.all_depot == False):
         Usage("Please used -d(--depot) or --all")
         sys.exit(1)
-    allDepot = None
+    allDepot = []
+    print  OPTIONS.depot_name
     if OPTIONS.depot_name:
-        allDepot  = [OPTIONS.depot_name]
+        allDepot.extend(OPTIONS.depot_name.split("/"))
     else:
         allDepot = getAllDepot(os.getcwd())
     print ("There are " + str(len(allDepot)) + " depots")
